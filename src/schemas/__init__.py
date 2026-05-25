@@ -1,0 +1,1 @@
+"""Pydantic schemas - typed data contracts between agents."""

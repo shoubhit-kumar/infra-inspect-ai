@@ -1,0 +1,144 @@
+[project]
+name = "infra-inspect-ai"
+version = "0.1.0"
+description = "AI-powered infrastructure inspection & compliance automation"
+requires-python = ">=3.11,<3.14"
+authors = [{name = "Shoubhit"}]
+
+dependencies = [
+    # ─── Core LLM & Agents ───────────────────────────
+    "langchain>=0.3.0",
+    "langchain-core>=0.3.0",
+    "langchain-community>=0.3.0",
+    "langchain-google-genai>=2.0.0",
+    "langchain-ibm>=0.3.0",
+    "langgraph>=0.2.50",
+
+    # ─── Provider-agnostic LLM router ────────────────
+    "litellm>=1.52.0",
+
+    # ─── Anthropic (used by router) ──────────────────
+    "langchain-anthropic>=0.3.0",
+
+    # ─── Persistence ─────────────────────────────────
+    "sqlalchemy>=2.0.36",
+    "alembic>=1.14.0",
+
+    # ─── Settings & Validation ───────────────────────
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.6.0",
+    "python-dotenv>=1.0.0",
+
+    # ─── Logging ─────────────────────────────────────
+    "structlog>=24.4.0",
+    "rich>=13.9.0",
+]
+
+[project.optional-dependencies]
+
+# ─── RAG (Week 3) ─────────────────────────────────────
+rag = [
+    "faiss-cpu>=1.9.0",
+    "sentence-transformers>=3.3.0",
+    "langchain-huggingface>=0.1.0",
+    "langchain-text-splitters>=0.3.0",
+    "rank-bm25>=0.2.2",
+    "pypdf>=5.1.0",
+    "pytesseract>=0.3.13",
+    "pdf2image>=1.17.0",
+    "pillow>=11.0.0",
+    # Reranker model dependency that ships separately:
+    "torch>=2.4.0",
+]
+
+# ─── MCP (Week 4) ─────────────────────────────────────
+mcp = [
+    "mcp>=1.0.0",
+    "anyio>=4.6.0",      # MCP stdio transport
+]
+
+# ─── API + UI (Days 20-21) ────────────────────────────
+api = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "python-multipart>=0.0.20",   # FastAPI file uploads (Day 20)
+    "streamlit>=1.40.0",
+    "requests>=2.32.0",           # Streamlit -> FastAPI HTTP client (Day 21)
+    "httpx>=0.27.0",              # FastAPI test client / async HTTP
+]
+
+# ─── Observability (Day 16-17) ────────────────────────
+observability = [
+    "langsmith>=0.1.140",
+    "langfuse>=2.50.0",
+]
+
+# ─── Evals (Days 18-19) ───────────────────────────────
+evals = [
+    "ragas>=0.2.0",
+    "deepeval>=2.0.0",
+    "datasets>=2.20.0",      # ragas dependency
+    "matplotlib>=3.9.0",     # threshold sweep charts
+    "pandas>=2.2.0",         # ragas returns DataFrames
+    "numpy>=1.26.0",         # pandas/matplotlib dependency, pin to avoid 2.x surprises
+]
+
+# ─── Dev tooling ──────────────────────────────────────
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+    "ipykernel>=6.29.0",
+]
+
+# ─── Convenience meta-extras (Day 24 CI/CD) ────────────
+# Install everything for development:
+#   pip install -e ".[all]"
+all = [
+    "infra-inspect-ai[rag,mcp,api,observability,evals,dev]",
+]
+
+
+# ─── Build system (needed for editable installs) ──────
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+
+# ─── Ruff ─────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["data/", ".venv/", "build/", "dist/"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "C4", "SIM"]
+ignore = [
+    "E501",  # line-length handled by formatter
+    "B008",  # FastAPI uses Depends() in defaults legitimately
+]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/*" = ["E402"]  # scripts may need late imports
+
+# ─── Pytest ───────────────────────────────────────────
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+# ─── Mypy ─────────────────────────────────────────────
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = false
+warn_unused_configs = true
+disallow_untyped_defs = false
+no_implicit_optional = true
+check_untyped_defs = true
+ignore_missing_imports = true

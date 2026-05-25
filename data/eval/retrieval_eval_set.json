@@ -1,0 +1,82 @@
+[
+  {
+    "id": "elec-frayed-wiring",
+    "finding": "Exposed and frayed wiring with damaged insulation, multiple wires showing visible copper strands",
+    "category": "electrical",
+    "expected_regulation_areas": ["NBC Vol 2 Part 8 - Electrical Installations", "IS 732 - Code of practice for electrical wiring"],
+    "expected_themes": ["insulation requirements", "wire condition", "electrical safety", "exposed conductors"],
+    "min_score_baseline": "Should retrieve content on wire insulation standards and safety requirements"
+  },
+  {
+    "id": "elec-overcrowded-panel",
+    "finding": "Overcrowded electrical panel with tangled wires, multiple splices, and disorganized wiring layout",
+    "category": "electrical",
+    "expected_regulation_areas": ["NBC Vol 2 Part 8 - Electrical Installations"],
+    "expected_themes": ["panel space requirements", "wiring layout", "splice limitations", "working clearance"],
+    "min_score_baseline": "Should retrieve content on panel arrangement and clearance"
+  },
+  {
+    "id": "elec-corrosion",
+    "finding": "Corrosion and rust visible on fuse holders, terminals, and electrical contacts",
+    "category": "electrical",
+    "expected_regulation_areas": ["NBC Vol 2 Part 8 - Electrical Installations", "IS 732"],
+    "expected_themes": ["electrical contact integrity", "corrosion", "maintenance requirements"],
+    "min_score_baseline": "Should retrieve content on electrical maintenance and contact requirements"
+  },
+  {
+    "id": "fire-extinguisher-records",
+    "finding": "Fire extinguisher inspection tag missing entries for current year, indicating overdue inspection",
+    "category": "fire_safety",
+    "expected_regulation_areas": ["IS 2190 - Selection and installation of portable fire extinguishers", "NFPA 10 - Standard for Portable Fire Extinguishers"],
+    "expected_themes": ["inspection frequency", "maintenance records", "fire extinguisher servicing"],
+    "min_score_baseline": "Should retrieve content on extinguisher inspection schedule"
+  },
+  {
+    "id": "fire-alarm-presence",
+    "finding": "Yellow circular fire alarm device mounted on ceiling, status of functionality unverified",
+    "category": "fire_safety",
+    "expected_regulation_areas": ["NBC Vol 2 Part 4 - Fire and Life Safety", "NFPA"],
+    "expected_themes": ["fire alarm installation", "detection equipment", "functional testing"],
+    "min_score_baseline": "Should retrieve content on fire detection system requirements"
+  },
+  {
+    "id": "plumbing-pipe-corrosion",
+    "finding": "Extensive rust and corrosion on plumbing pipe flanges and joints with peeling protective paint",
+    "category": "plumbing",
+    "expected_regulation_areas": ["NBC Vol 2 Part 9 - Plumbing Services"],
+    "expected_themes": ["pipe maintenance", "corrosion protection", "pipe integrity"],
+    "min_score_baseline": "Should retrieve content on plumbing maintenance and pipe condition"
+  },
+  {
+    "id": "plumbing-ceiling-water",
+    "finding": "Multiple brown circular water stains on ceiling tiles indicating ongoing leak from above",
+    "category": "plumbing",
+    "expected_regulation_areas": ["NBC Vol 2 Part 9 - Plumbing", "NBC Vol 1 - Building water resistance"],
+    "expected_themes": ["water leakage", "ceiling damage", "moisture intrusion"],
+    "min_score_baseline": "Should retrieve content on water damage and leakage standards"
+  },
+  {
+    "id": "structural-wall-crack",
+    "finding": "Significant horizontal crack approximately 2cm wide running across interior wall plaster",
+    "category": "structural",
+    "expected_regulation_areas": ["NBC Vol 1 - Structural Design", "IS 456 - Plain and reinforced concrete"],
+    "expected_themes": ["structural integrity", "wall crack assessment", "load-bearing concerns"],
+    "min_score_baseline": "Should retrieve content on structural assessment"
+  },
+  {
+    "id": "structural-plaster-spalling",
+    "finding": "Plaster delamination and spalling around wall crack, exposed underlying material",
+    "category": "structural",
+    "expected_regulation_areas": ["NBC Vol 1 - Building Construction"],
+    "expected_themes": ["plaster integrity", "wall finishes", "structural deterioration"],
+    "min_score_baseline": "Should retrieve content on building finish and maintenance"
+  },
+  {
+    "id": "general-dust-debris",
+    "finding": "Accumulation of dust and debris on electrical panel wooden backing and surrounding components",
+    "category": "general",
+    "expected_regulation_areas": ["NBC Vol 2 Part 8 - Electrical", "Housekeeping"],
+    "expected_themes": ["electrical panel cleanliness", "fire risk from debris", "facility maintenance"],
+    "min_score_baseline": "Should retrieve content on electrical equipment cleanliness"
+  }
+]
