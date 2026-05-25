@@ -51,7 +51,8 @@ data/outputs/*
 data/vector_db/
 data/incoming_uploads/
 data/eval/results/
-data/building_codes/
+data/building_codes/*.pdf
+data/building_codes/_archive/
 data/sample_photos/
 
 # ─── Pytest / coverage ──────────────────────────────
