@@ -50,7 +50,7 @@ data/outputs/*
 !data/outputs/.gitkeep
 data/vector_db/
 data/incoming_uploads/
-data/eval/results/
+data/eval/results/*.json
 data/building_codes/*.pdf
 data/building_codes/_archive/
 data/sample_photos/

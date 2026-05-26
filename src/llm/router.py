@@ -44,6 +44,7 @@ def get_llm(
             model=model or settings.gemini_model,
             google_api_key=settings.google_api_key,
             temperature=temperature,
+            timeout=60,  # seconds. Fail fast instead of hanging on overloaded model.
             **kwargs,
         )
 
@@ -62,7 +63,7 @@ def get_llm(
             url=settings.watsonx_url,
             apikey=settings.watsonx_api_key,
             project_id=settings.watsonx_project_id,
-            params={"temperature": temperature, "max_tokens": 2000},
+            params={"temperature": temperature, "max_tokens": 2000, "time_limit": 90000, },
             **kwargs,
         )
 
@@ -76,6 +77,7 @@ def get_llm(
             model=model or "claude-3-5-sonnet-20241022",
             anthropic_api_key=settings.anthropic_api_key,
             temperature=temperature,
+            timeout=60.0,  # seconds. Same pattern as Gemini.
             **kwargs,
         )
 
