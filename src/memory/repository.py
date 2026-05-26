@@ -15,6 +15,7 @@ from src.memory.store import (
     Asset,
     FindingRecord,
     InspectionRun,
+    NotificationRecord,
     WorkOrderRecord,
     init_db,
     make_engine,
@@ -25,17 +26,6 @@ from src.schemas.memory import (
     AssetSummary,
     HistoricalFinding,
     HistoricalWorkOrder,
-)
-
-from src.memory.store import (
-    Asset,
-    FindingRecord,
-    InspectionRun,
-    NotificationRecord,  # <- add this line
-    WorkOrderRecord,
-    init_db,
-    make_engine,
-    make_session_factory,
 )
 from src.utils.logging import get_logger
 

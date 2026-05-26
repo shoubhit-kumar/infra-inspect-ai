@@ -26,6 +26,10 @@ async def lifespan(app: FastAPI):
     enable_dev_cache()
 
     settings = get_settings()
+
+    from src.bootstrap import warm_up_rag_stack
+    warm_up_rag_stack()
+    
     mcp_servers: dict[str, list[str]] = {}
     if settings.mcp_enabled:
         mcp_servers = {

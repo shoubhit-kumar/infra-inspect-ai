@@ -3,6 +3,7 @@
 Why LiteLLM under the hood? Single API, 100+ providers, drop-in OpenAI-compat.
 But we wrap it in LangChain-compatible interface for LangGraph (Week 2).
 """
+from functools import lru_cache
 from typing import Literal
 
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -15,6 +16,36 @@ logger = get_logger(__name__)
 
 ProviderName = Literal["gemini", "watsonx", "anthropic"]
 
+@lru_cache(maxsize=8)
+def _get_watsonx_client(model_id: str, temperature: float) -> BaseChatModel:
+    """Cached Watsonx ChatWatsonx instance keyed by (model_id, temperature).
+
+    Watsonx instantiation makes three HTTP round-trips (IAM token, project
+    verify, foundation model list). For workflows with 5 text agents, that's
+    ~15 redundant network calls per run. Caching the client by (model, temp)
+    keeps these to a single setup per process per config.
+
+    ChatWatsonx instances are stateless between .invoke() calls and refresh
+    their auth token internally, so reusing them is safe.
+    """
+    from langchain_ibm import ChatWatsonx
+
+    settings = get_settings()
+    if not all([settings.watsonx_api_key, settings.watsonx_url, settings.watsonx_project_id]):
+        raise ValueError("Watsonx credentials missing in .env")
+
+    logger.info("watsonx.client_cache_miss", model_id=model_id, temperature=temperature)
+    return ChatWatsonx(
+        model_id=model_id,
+        url=settings.watsonx_url,
+        apikey=settings.watsonx_api_key,
+        project_id=settings.watsonx_project_id,
+        params={
+            "temperature": temperature,
+            "max_tokens": 2000,
+            "time_limit": 90000,
+        },
+    )
 
 def get_llm(
     provider: ProviderName | None = None,
@@ -49,22 +80,10 @@ def get_llm(
         )
 
     if provider == "watsonx":
-        from langchain_ibm import ChatWatsonx
-
-        if not all([settings.watsonx_api_key, settings.watsonx_url, settings.watsonx_project_id]):
-            raise ValueError("Watsonx credentials missing in .env")
-
-        # Default models differ by use case. Text-only tasks use 70b; vision tasks use a vision model.
-        # If caller specified model, respect it. Otherwise pick by kwargs flag or fall back to text.
         default_model = "meta-llama/llama-3-3-70b-instruct"
-
-        return ChatWatsonx(
+        return _get_watsonx_client(
             model_id=model or default_model,
-            url=settings.watsonx_url,
-            apikey=settings.watsonx_api_key,
-            project_id=settings.watsonx_project_id,
-            params={"temperature": temperature, "max_tokens": 2000, "time_limit": 90000, },
-            **kwargs,
+            temperature=temperature,
         )
 
     if provider == "anthropic":

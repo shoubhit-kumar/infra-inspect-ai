@@ -50,7 +50,6 @@ class RiskAgent(BaseAgent[AgentState, RiskAssessment]):
         assessment.model_used = f"{self.provider}:{self.model or 'default'}"
 
         # Defensive: ensure risk_score = impact * probability for every issue.
-        # LLMs sometimes do the math wrong. Recompute and warn on drift.
         for issue in assessment.issues:
             expected = round(issue.impact_score * issue.probability_score, 2)
             if abs(issue.risk_score - expected) > 0.5:
@@ -61,6 +60,14 @@ class RiskAgent(BaseAgent[AgentState, RiskAssessment]):
                     recomputed=expected,
                 )
                 issue.risk_score = expected
+
+        # Compute highest_risk_category server-side rather than trusting the
+        # LLM to populate it. Aggregates risk_score per category and picks the
+        # category with the highest total. This is one of those simple
+        # aggregations where determinism beats LLM judgment every time.
+        assessment.highest_risk_category = _compute_highest_risk_category(
+            assessment.issues
+        )
 
         self.logger.info(
             "risk.done",
@@ -134,3 +141,32 @@ class RiskAgent(BaseAgent[AgentState, RiskAssessment]):
                 )
 
         return "\n".join(lines)
+    
+def _compute_highest_risk_category(issues: list) -> "IssueCategory | None":
+    """Determine the category contributing the most aggregate risk.
+
+    Deterministic and explainable: sums the risk_score per category and
+    returns the category with the highest total. Tie-breaks by issue count.
+
+    Returns None for an empty issue list.
+    """
+    from src.schemas.enums import IssueCategory  # local import to avoid cycles
+
+    if not issues:
+        return None
+
+    # Aggregate risk_score per category. Each issue's category is an IssueCategory enum.
+    totals: dict[IssueCategory, float] = {}
+    counts: dict[IssueCategory, int] = {}
+    for iss in issues:
+        cat = iss.category
+        totals[cat] = totals.get(cat, 0.0) + float(iss.risk_score)
+        counts[cat] = counts.get(cat, 0) + 1
+
+    # Sort by total risk_score desc, then by issue count desc as tie-break.
+    ranked = sorted(
+        totals.items(),
+        key=lambda kv: (kv[1], counts[kv[0]]),
+        reverse=True,
+    )
+    return ranked[0][0]

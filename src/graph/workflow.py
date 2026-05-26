@@ -346,7 +346,17 @@ def _classify_against_history(state: AgentState) -> list[dict[str, Any]]:
     if not new_findings:
         return []
 
-    comparisons = classify_findings(new_findings, history)
+    # Use BGE embeddings for semantic matching. Falls back to lexical if
+    # embeddings fail to load.
+    embed_fn = None
+    try:
+        from src.rag.embeddings import get_embeddings
+        embed_model = get_embeddings()
+        embed_fn = embed_model.embed_documents
+    except Exception as e:
+        logger.warning("classification.embeddings_unavailable", error=str(e))
+
+    comparisons = classify_findings(new_findings, history, embed_fn=embed_fn)
 
     out: list[dict[str, Any]] = []
     for c in comparisons:
@@ -355,6 +365,7 @@ def _classify_against_history(state: AgentState) -> list[dict[str, Any]]:
             "new_severity": c.new_finding.severity.value,
             "new_category": c.new_finding.category.value,
             "status": c.status,
+            "match_score": round(c.match_score, 3),   # ← ADD THIS
         }
         if c.historical_match:
             entry["old_issue"] = c.historical_match.issue

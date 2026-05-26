@@ -12,6 +12,10 @@ def main() -> None:
     from src.utils.cache import enable_dev_cache
     enable_dev_cache()
 
+    # Warm up heavy ML models so first retrieval is hot.
+    from src.bootstrap import warm_up_rag_stack
+    warm_up_rag_stack()
+
     samples_dir = Path("data/sample_photos")
     photos = sorted(
         str(p) for p in samples_dir.iterdir()

@@ -124,3 +124,21 @@ This is a learning project — production deployment would require: real authent
 ## License
 
 TBD
+
+
+### Failed Optimization: Parallel RAG Retrieval
+
+Initial profiling via Langfuse showed compliance spent 60s on 5 sequential RAG retrievals
+(75% of total workflow time). Naive intuition: parallelize via ThreadPoolExecutor with
+max_workers=5. Result: per-batch latency grew from 5-10s to 47-51s. Total time only
+dropped from 60s to 48s (1.2x).
+
+Root cause: PyTorch CPU inference doesn't release the GIL as cleanly as numpy/FAISS.
+Five concurrent reranker threads contend for the same cores, with Python overhead
+multiplied while actual matmul stays constant.
+
+Proper fix would be to batch all 5 queries into a single CrossEncoder.predict() call,
+amortizing model invocation overhead. Deferred for a future iteration.
+
+**Lesson:** Profile before parallelizing. GIL-free claims for PyTorch are environment-
+dependent. CPU-bound parallelism needs multi-process or GPU, not threads.

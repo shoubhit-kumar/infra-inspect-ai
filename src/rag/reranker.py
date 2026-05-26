@@ -50,3 +50,29 @@ def rerank(
     )
     logger.info("reranker.done", input_count=len(documents), top_k=top_k)
     return [(doc, float(score)) for doc, score in ranked[:top_k]]
+
+def warm_up_reranker(
+    model_name: str = DEFAULT_RERANKER,
+    dummy_query: str = "warm up the model",
+    dummy_doc: str = "this is a placeholder document for jit compilation",
+) -> None:
+    """Warm up the cross-encoder model at boot to avoid cold-start latency.
+
+    Loads the model into memory and runs one throwaway prediction so the
+    tokenizer cache and torch jit-traced forward pass are ready. The first
+    real reranker call after this will reuse the cached singleton.
+
+    Idempotent: safe to call multiple times. Subsequent calls are no-ops
+    because `get_reranker` is `@lru_cache`-decorated.
+
+    Typical cost: ~3-5s at boot, eliminated from first real retrieval.
+    """
+    logger.info("reranker.warm_up.start", model=model_name)
+    try:
+        model = get_reranker(model_name)
+        # Throwaway prediction to JIT-compile forward pass and warm tokenizer.
+        _ = model.predict([(dummy_query, dummy_doc)])
+        logger.info("reranker.warm_up.done", model=model_name)
+    except Exception as e:
+        # Warm-up failure is non-fatal - the lazy path will still work.
+        logger.warning("reranker.warm_up.failed", model=model_name, error=str(e))
