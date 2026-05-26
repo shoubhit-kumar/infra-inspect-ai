@@ -11,6 +11,7 @@ from typing import Any
 from sqlalchemy import desc, func, select
 from sqlalchemy.orm import Session, sessionmaker
 
+from src.memory.connection import get_session_factory
 from src.memory.store import (
     Asset,
     FindingRecord,
@@ -45,10 +46,31 @@ class AssetRepository:
     per-request with a request-scoped session.
     """
 
-    def __init__(self, db_path: Path | None = None) -> None:
-        self.engine = make_engine(db_path) if db_path else make_engine()
-        init_db(self.engine)
-        self.SessionLocal: sessionmaker[Session] = make_session_factory(self.engine)
+    def __init__(
+        self,
+        db_path: Path | None = None,
+        session_factory: sessionmaker[Session] | None = None,
+    ) -> None:
+        """Build a repository.
+
+        Resolution order:
+          1. If session_factory is provided, use it directly. This is how
+             tests inject in-memory engines, and how the FastAPI lifespan
+             could provide a request-scoped factory in the future.
+          2. Else if db_path is provided, build a dedicated engine for it.
+             Used by tests that want a fresh on-disk DB.
+          3. Otherwise, use the process-wide singleton (the production path).
+        """
+        if session_factory is not None:
+            self.SessionLocal = session_factory
+            self.engine = None  # not owned by this instance
+        elif db_path is not None:
+            self.engine = make_engine(db_path)
+            init_db(self.engine)
+            self.SessionLocal = make_session_factory(self.engine)
+        else:
+            self.engine = None  # owned by the singleton
+            self.SessionLocal = get_session_factory()
 
     # ---------- Writes ----------
 
