@@ -67,3 +67,6 @@ htmlcov/
 # ─── OS ─────────────────────────────────────────────
 .DS_Store
 Thumbs.db
+
+# DeepEval cache (transitive dependency)
+.deepeval/
