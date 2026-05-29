@@ -109,13 +109,32 @@ class JobStatusResponse(BaseModel):
     )
 
 
+class ServerHealthInfo(BaseModel):
+    """Detailed health state for one MCP server."""
+    name: str
+    status: str
+    """healthy | degraded | unhealthy | unknown"""
+    last_check_at: str | None = None
+    last_success_at: str | None = None
+    last_error: str | None = None
+    consecutive_failures: int = 0
+    total_pings: int = 0
+
+
 class HealthResponse(BaseModel):
-    """Liveness check."""
+    """Liveness check.
+
+    `status` aggregates across all MCP servers:
+      - 'ok'       - all healthy or unknown
+      - 'degraded' - any server is degraded (transient failures)
+      - 'unhealthy'- any server is unhealthy (sustained failures)
+    """
 
     status: str = "ok"
     version: str = "0.1.0"
     workflow_loaded: bool
     mcp_servers_connected: list[str]
+    mcp_servers: list[ServerHealthInfo] = Field(default_factory=list)
 
 
 class BuildingMemoryResponse(BaseModel):
