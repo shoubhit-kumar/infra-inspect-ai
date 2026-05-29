@@ -60,6 +60,13 @@ class InspectionRun(Base):
     compliance_status: Mapped[str | None] = mapped_column(String(30))
     """E.g. 'compliant', 'non_compliant', 'partial'."""
 
+    request_id: Mapped[str | None] = mapped_column(String(50))
+    """Correlation ID from the originating HTTP request. NULL for CLI/script runs.
+    
+    Indexed-via-default for direct SQL lookup: 
+        SELECT * FROM inspection_runs WHERE request_id = 'req_abc123'
+    """
+
     asset: Mapped[Asset] = relationship(back_populates="inspections")
     findings: Mapped[list["FindingRecord"]] = relationship(back_populates="run")
     work_orders: Mapped[list["WorkOrderRecord"]] = relationship(back_populates="run")

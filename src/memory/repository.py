@@ -105,6 +105,7 @@ class AssetRepository:
         compliance_status: str | None,
         findings: list[dict[str, Any]],
         work_orders: list[dict[str, Any]],
+        request_id: str | None = None,
     ) -> int:
         """Persist a complete inspection run with findings and work orders.
 
@@ -120,6 +121,7 @@ class AssetRepository:
                 finding_count=finding_count,
                 violation_count=violation_count,
                 compliance_status=compliance_status,
+                request_id=request_id or None,
             )
             s.add(run)
             s.flush()  # so we have run.id without committing yet

@@ -4,11 +4,13 @@ The MCP servers and Langfuse trace are heavy to construct, so we bring them
 up once on app startup and tear them down on shutdown - same pattern as
 test_workflow.py but at process scope instead of per-call.
 """
+import uuid
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.api.request_context import set_request_id
 from src.api.routes import health, inspections, memory
 from src.config.settings import get_settings
 from src.mcp_clients.connections import set_mcp_manager
@@ -66,6 +68,18 @@ def create_app() -> FastAPI:
         ),
         lifespan=lifespan,
     )
+
+    # Correlation ID middleware - generates or accepts X-Request-ID per request.
+    # MUST be registered before CORS so it runs first in the request chain,
+    # ensuring the ContextVar is set before any downstream code (handlers,
+    # logging) executes.
+    @app.middleware("http")
+    async def correlation_id_middleware(request: Request, call_next):
+        rid = request.headers.get("X-Request-ID") or f"req_{uuid.uuid4().hex[:12]}"
+        set_request_id(rid)
+        response = await call_next(request)
+        response.headers["X-Request-ID"] = rid
+        return response
 
     # CORS - permissive for local dev; tighten in production deployment
     app.add_middleware(

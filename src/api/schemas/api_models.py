@@ -50,6 +50,14 @@ class JobAcceptedResponse(BaseModel):
     """Returned from POST /inspections with HTTP 202."""
 
     job_id: str = Field(..., examples=["job_a1b2c3d4"])
+    request_id: str = Field(
+        ...,
+        description=(
+            "Correlation ID for tracing this request across logs, Langfuse "
+            "traces, and the database. Mirrors the X-Request-ID response header."
+        ),
+        examples=["req_a1b2c3d4e5f6"],
+    )
     status: JobStatus = JobStatus.queued
     poll_url: str = Field(
         ...,
@@ -89,6 +97,7 @@ class JobStatusResponse(BaseModel):
     """Returned from GET /jobs/{job_id}."""
 
     job_id: str
+    request_id: str = ""
     status: JobStatus
     submitted_at: datetime
     started_at: datetime | None = None

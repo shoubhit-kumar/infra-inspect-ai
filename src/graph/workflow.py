@@ -74,6 +74,7 @@ def memory_persist_node(state: AgentState) -> AgentState:
                             "confidence": f.confidence,
                         }
                     )
+            logger.info("memory.persist.request_id_check", value=repr(state.request_id))
 
             run_id = repo.record_inspection_run(
                 building_id=state.building_id,
@@ -84,6 +85,7 @@ def memory_persist_node(state: AgentState) -> AgentState:
                 compliance_status=state.compliance_status.value,
                 findings=flat_findings,
                 work_orders=[],
+                request_id=state.request_id or None,
             )
             state.memory_run_id = run_id
 

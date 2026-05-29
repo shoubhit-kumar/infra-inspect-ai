@@ -7,6 +7,7 @@ from pathlib import Path
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 
 from src.api.dependencies import JobRegistry, get_job_registry
+from src.api.request_context import get_request_id, set_request_id
 from src.api.schemas.api_models import (
     CreateInspectionRequest,
     InspectionSummary,
@@ -24,19 +25,28 @@ logger = get_logger(__name__)
 router = APIRouter(tags=["inspections"])
 
 
-def _run_workflow_job(job_id: str, request: CreateInspectionRequest) -> None:
+def _run_workflow_job(
+    job_id: str,
+    request: CreateInspectionRequest,
+    request_id: str,
+) -> None:
     """Background task: run the workflow and stash the result on the job record.
 
     Runs in FastAPI's background tasks thread - the request returns 202
     immediately while this executes.
+
+    `request_id` is captured from the originating HTTP request and re-applied
+    here because ContextVars don't auto-propagate across thread boundaries.
+    With it bound, every log line emitted during this workflow's execution
+    is tagged with the same request_id as the API call that started it.
     """
+    set_request_id(request_id)
     registry = get_job_registry()
     registry.update(
         job_id,
         status=JobStatus.running,
         started_at=datetime.now(timezone.utc),
     )
-
     try:
         # Validate photo paths exist
         missing = [p for p in request.photo_paths if not Path(p).exists()]
@@ -47,6 +57,7 @@ def _run_workflow_job(job_id: str, request: CreateInspectionRequest) -> None:
             building_id=request.building_id,
             photo_paths=request.photo_paths,
             inspector_notes=request.inspector_notes,
+            request_id=request_id,
         )
 
         logger.info(
@@ -113,6 +124,7 @@ def _summarize_state(state: AgentState) -> InspectionSummary:
     )
 
 
+
 @router.post(
     "/inspections",
     response_model=JobAcceptedResponse,
@@ -128,12 +140,26 @@ def create_inspection(
 
     Returns immediately with a job_id. Workflow runs in the background;
     poll GET /jobs/{job_id} for status and results.
+
+    The X-Request-ID header (set by middleware on every request) is captured
+    and propagated into the background task so all workflow logs share the
+    same correlation ID as this HTTP request.
     """
     record = registry.create()
-    background_tasks.add_task(_run_workflow_job, record.job_id, request)
+    rid = get_request_id()
+    record.request_id = rid
+    background_tasks.add_task(_run_workflow_job, record.job_id, request, rid)
+
+    logger.info(
+        "api.job.queued",
+        job_id=record.job_id,
+        building_id=request.building_id,
+        photo_count=len(request.photo_paths),
+    )
 
     return JobAcceptedResponse(
         job_id=record.job_id,
+        request_id=rid,
         status=record.status,
         poll_url=f"/jobs/{record.job_id}",
     )
@@ -155,6 +181,7 @@ def get_job(
 
     return JobStatusResponse(
         job_id=record.job_id,
+        request_id=record.request_id,
         status=record.status,
         submitted_at=record.submitted_at,
         started_at=record.started_at,

@@ -85,27 +85,38 @@ def trace_workflow_run(
     building_id: str,
     photo_count: int,
     inspector_notes: str = "",
+    request_id: str = "",
 ) -> Iterator[Any]:
     """Open a root trace for one workflow invocation.
 
     Yields the trace object (or None if tracing disabled). Pass it to
     `span_node()` calls inside the workflow so spans nest under this trace.
+
+    If request_id is provided, it's used as the Langfuse session_id so all
+    traces from a single request can be filtered together in the Langfuse UI.
     """
     client = get_langfuse()
     if client is None:
         yield None
         return
 
-    trace = client.trace(
-        name="infra-inspect-workflow",
-        input={
+    trace_kwargs: dict[str, Any] = {
+        "name": "infra-inspect-workflow",
+        "input": {
             "building_id": building_id,
             "photo_count": photo_count,
             "inspector_notes": inspector_notes[:200],
         },
-        metadata={"workflow_version": "day16"},
-        tags=["workflow", "v1"],
-    )
+        "metadata": {
+            "workflow_version": "day16",
+            "request_id": request_id,
+        },
+        "tags": ["workflow", "v1"],
+    }
+    if request_id:
+        trace_kwargs["session_id"] = request_id
+
+    trace = client.trace(**trace_kwargs)
     try:
         yield trace
     except Exception as e:

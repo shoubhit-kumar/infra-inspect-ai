@@ -20,8 +20,13 @@ class JobRecord:
 
     For a single-worker uvicorn this is fine. For a multi-worker deployment
     we'd promote this to Redis or a database table. Day 22 deployment note.
+
+    `request_id` is captured from the X-Request-ID header on submission so
+    clients can correlate this job back to the originating HTTP request
+    across logs, Langfuse, and the DB.
     """
     job_id: str
+    request_id: str = ""
     status: JobStatus = JobStatus.queued
     submitted_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     started_at: datetime | None = None

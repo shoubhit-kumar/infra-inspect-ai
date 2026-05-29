@@ -31,6 +31,9 @@ class AgentState(BaseModel):
     inspector_notes: str = ""
     """Free-text notes from the human inspector."""
 
+    request_id: str = ""
+    """Correlation ID propagated from the HTTP request. Empty for non-API runs (CLI/scripts)."""
+
     # ---------- Agent 1: Inspection ----------
     inspection_reports: list[InspectionReport] = Field(default_factory=list)
     """One report per photo. Filled by InspectionAgent."""
