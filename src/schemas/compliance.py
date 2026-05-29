@@ -54,7 +54,7 @@ class ComplianceViolation(BaseModel):
     suggested_remediation: Annotated[str, Field(min_length=10, max_length=1500)]
     """What to do to come back into compliance."""
 
-    # ----- RAG grounding (Day 8) -----
+    # ----- RAG grounding -----
     grounded: bool = False
     """True if this violation was supported by retrieved regulation chunks.
     False means the LLM produced this without retrieval context (legacy or fallback)."""

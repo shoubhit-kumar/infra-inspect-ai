@@ -16,7 +16,7 @@ class AgentState(BaseModel):
     Each agent reads what it needs, writes its outputs, and passes
     the (mutated) state to the next agent.
 
-    In Week 2 we will use this as the LangGraph state type.
+    This is used as the LangGraph state type.
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -38,7 +38,7 @@ class AgentState(BaseModel):
     inspection_reports: list[InspectionReport] = Field(default_factory=list)
     """One report per photo. Filled by InspectionAgent."""
 
-    # ---------- Agent 2: Compliance (Week 2) ----------
+    # ---------- Agent 2: Compliance ----------
     compliance_violations: list[dict[str, Any]] = Field(default_factory=list)
     compliance_status: ComplianceStatus = ComplianceStatus.UNKNOWN
 
@@ -61,7 +61,7 @@ class AgentState(BaseModel):
     followup_plan: dict[str, Any] | None = None
     """FollowUpPlan.model_dump() as dict."""
 
-    # ---------- Memory (Day 10) ----------
+    # ---------- Memory ----------
     asset_memory: dict[str, Any] | None = None
     """AssetMemory.model_dump() - filled by memory_recall_node at the start."""
 
@@ -71,7 +71,7 @@ class AgentState(BaseModel):
     memory_run_id: int | None = None
     """The inspection_runs.id assigned when persisting this run. Set by memory_persist_node."""
 
-    # ---------- Tracing (Day 16) ----------
+    # ---------- Tracing ----------
     trace: Any = Field(default=None, exclude=True)
     """Langfuse trace object for this workflow run. Set by test_workflow."""
 

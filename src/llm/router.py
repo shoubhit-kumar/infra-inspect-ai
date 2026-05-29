@@ -1,7 +1,7 @@
 """LLM router — unified interface across Gemini, Watsonx, Anthropic.
 
 Why LiteLLM under the hood? Single API, 100+ providers, drop-in OpenAI-compat.
-But we wrap it in LangChain-compatible interface for LangGraph (Week 2).
+But we wrap it in LangChain-compatible interface for LangGraph.
 """
 from functools import lru_cache
 from typing import Literal
@@ -122,6 +122,6 @@ if __name__ == "__main__":
             response = llm.invoke("Say hello in 5 words.")
             print(f"Watsonx: {response.content}\n")
         except Exception as e:
-            print(f"Watsonx unavailable ({type(e).__name__}) - skipping, will retry in Week 5\n")
+            print(f"Watsonx unavailable ({type(e).__name__}) - skipping\n")
     else:
         print("Watsonx skipped (no credentials)\n")

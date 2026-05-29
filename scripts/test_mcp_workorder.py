@@ -113,7 +113,7 @@ async def main() -> None:
         )
         print(f"  Response: {result!r}")
 
-    print("\nDay 12 MCP work-order smoke test complete.")
+    print("\nMCP work-order smoke test complete.")
 
 
 if __name__ == "__main__":

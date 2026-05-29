@@ -32,7 +32,7 @@ class WorkOrder(BaseModel):
     """A single actionable ticket generated from a RiskedIssue."""
 
     work_order_id: str | None = None
-    """Set by the work order system (Week 4). Optional at creation time."""
+    """Set by the work order system. Optional at creation time."""
 
     issue_id: Annotated[str, Field(min_length=3, max_length=50)]
     """Links back to the RiskedIssue that generated this."""

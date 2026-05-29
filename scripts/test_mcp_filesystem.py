@@ -38,7 +38,7 @@ async def main() -> None:
             "write_file",
             {
                 "path": "mcp_smoke_test.txt",
-                "content": "Hello from MCP! Day 11 working.\n",
+                "content": "Hello from MCP! Test working.\n",
             },
         )
         print(f"  {result}")
@@ -74,7 +74,7 @@ async def main() -> None:
         )
         print(f"  Response: {result[:120]!r}")
 
-    print("\nDay 11 MCP smoke test complete.")
+    print("\nMCP smoke test complete.")
 
 
 if __name__ == "__main__":

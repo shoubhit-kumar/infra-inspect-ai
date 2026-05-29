@@ -25,7 +25,7 @@ from src.utils.logging import get_logger
 logger = get_logger(__name__)
 
 
-# ---------- Memory nodes (Day 10) ----------
+# ---------- Memory nodes ----------
 
 def memory_recall_node(state: AgentState) -> AgentState:
     """First node: load any prior memory for this building."""

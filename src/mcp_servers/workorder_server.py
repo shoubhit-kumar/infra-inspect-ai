@@ -1,8 +1,8 @@
 """Work-order MCP server.
 
 Exposes SQLite-backed work-order CRUD as MCP tools. Acts as a thin
-adapter over AssetRepository. Replaces direct DB access from the
-WorkOrderAgent in Day 14.
+adapter over AssetRepository. Provides MCP-based access to work orders
+instead of direct database access from the WorkOrderAgent.
 
 Run standalone:
     python -m scripts.run_workorder_server

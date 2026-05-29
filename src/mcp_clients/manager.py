@@ -145,8 +145,8 @@ class MCPConnectionManager:
             # The anyio "cancel scope" error is cosmetic: it complains because the
             # teardown task isn't the same task that opened the AsyncExitStack,
             # but the subprocesses still get cleaned up when the process exits.
-            # See tech debt item #4. Proper fix would restructure lifecycle so
-            # teardown happens entirely on the loop thread.
+            # A proper fix would restructure lifecycle so teardown happens
+            # entirely on the loop thread.
             if "cancel scope" in error_text:
                 logger.debug("mcp.manager.teardown_anyio_warning", error=error_text[:200])
             else:

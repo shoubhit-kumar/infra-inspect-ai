@@ -1,6 +1,6 @@
 """Prompts for the grounded Compliance Agent.
 
-Day 8: We pass retrieved regulation chunks as grounded context. The LLM
+Retrieved regulation chunks are passed as grounded context. The LLM
 is restricted to citing only codes/sections that appear in the provided
 context. If retrieval finds nothing relevant, the LLM should not invent
 a citation - instead omit the violation or mark it INTERNAL.

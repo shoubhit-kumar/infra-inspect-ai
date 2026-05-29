@@ -80,9 +80,9 @@ class FollowUpAgent(BaseAgent[AgentState, FollowUpPlan]):
     ) -> None:
         """Dispatch each notification via MCP (preferred) or fall back to console log.
 
-        Day 14: notifications now flow through the notification MCP server,
+        Notifications flow through the notification MCP server,
         which persists them to SQLite and routes per channel. If the MCP
-        manager isn't available, we log to console as we did in Week 2.
+        manager isn't available, we fall back to console logging.
         """
         from src.mcp_clients.connections import get_mcp
 

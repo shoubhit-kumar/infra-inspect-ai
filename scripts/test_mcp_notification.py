@@ -46,8 +46,8 @@ async def main() -> None:
                 {
                     "channel": channel,
                     "audience": "assigned_team" if channel != "email" else "building_manager",
-                    "subject": f"[{urgency}] Day 13 smoke test via {channel}",
-                    "body": f"This is a smoke-test notification on channel {channel} at urgency {urgency}.",
+                    "subject": f"[{urgency}] MCP smoke test via {channel}",
+                    "body": f"This is an MCP smoke-test notification on channel {channel} at urgency {urgency}.",
                     "urgency": urgency,
                     "building_id": "BLDG-001",
                 },
@@ -131,7 +131,7 @@ async def main() -> None:
         )
         print(f"  Response: {result!r}")
 
-    print("\nDay 13 MCP notification smoke test complete.")
+    print("\nMCP notification smoke test complete.")
 
 
 if __name__ == "__main__":

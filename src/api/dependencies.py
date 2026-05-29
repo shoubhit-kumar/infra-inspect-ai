@@ -19,7 +19,7 @@ class JobRecord:
     """In-memory state for one async workflow job.
 
     For a single-worker uvicorn this is fine. For a multi-worker deployment
-    we'd promote this to Redis or a database table. Day 22 deployment note.
+    we'd promote this to Redis or a database table.
 
     `request_id` is captured from the X-Request-ID header on submission so
     clients can correlate this job back to the originating HTTP request

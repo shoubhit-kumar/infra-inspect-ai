@@ -108,7 +108,7 @@ def trace_workflow_run(
             "inspector_notes": inspector_notes[:200],
         },
         "metadata": {
-            "workflow_version": "day16",
+            "workflow_version": "1.0",
             "request_id": request_id,
         },
         "tags": ["workflow", "v1"],
@@ -159,7 +159,7 @@ def span_node(
         span.end()
                
 # ============================================================================
-# Day 17: Drill-down spans for retrieval, MCP, and LLM calls
+# Drill-down spans for retrieval, MCP, and LLM calls
 # ============================================================================
 
 # Module-level "current trace" so nested code can find the active trace

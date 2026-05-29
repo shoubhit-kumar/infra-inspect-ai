@@ -1,6 +1,6 @@
 """Compare new findings against historical ones.
 
-Used by Inspection and Risk agents (Day 10) to detect:
+Used by Inspection and Risk agents to detect:
     - persisting issues (same problem found again, unresolved)
     - resolved issues (something previously open is no longer present)
     - new issues (genuinely new)

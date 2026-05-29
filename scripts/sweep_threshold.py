@@ -96,7 +96,7 @@ def main() -> None:
     ax2.set_ylim(0, len(thresholds) and 10)
     ax2.grid(True, alpha=0.3, axis="y")
 
-    fig.suptitle("Day 18-19: Retrieval threshold sweep", fontsize=14)
+    fig.suptitle("Retrieval threshold sweep", fontsize=14)
     plt.tight_layout()
 
     chart_path = RESULTS_DIR / f"threshold_sweep_{timestamp}.png"

@@ -4,7 +4,7 @@ Exposes file read/write/list/delete operations as MCP tools, and the
 data/outputs directory as browsable MCP resources. Communicates over
 stdio (stdin/stdout JSON-RPC).
 
-Launched as a subprocess by an MCP client (our agents in Day 14).
+Launched as a subprocess by an MCP client (our agents).
 
 Run standalone for testing:
     python -m scripts.run_filesystem_server

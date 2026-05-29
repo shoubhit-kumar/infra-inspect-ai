@@ -10,7 +10,7 @@ if project_root not in sys.path:
 
 Used by:
 - The MCP client test script (test_mcp_filesystem.py) as a subprocess
-- Agent runtime in Day 14 as a subprocess
+- Agent runtime as a subprocess
 - Manual exploration (mcp inspector etc.)
 """
 import asyncio
